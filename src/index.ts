@@ -1,7 +1,5 @@
+import { Game } from "./game";
 
-const message = document.createElement("div");
-message.innerText = "Loading...";
+const game = new Game('canvas');
 
-document.body.appendChild(message);
-
-window.setTimeout(() => message.innerText = "Hello World!", 1000);
+window.onload = () => game.init();
