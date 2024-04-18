@@ -1,28 +1,27 @@
+import * as PIXI from 'pixi.js';
+
 export class Game {
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
+    private app: PIXI.Application;
 
-    constructor(canvasId: string) {
-        this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    async init() {
+        this.app = new PIXI.Application();
+        await this.app.init();
+        document.body.appendChild(this.app.canvas);
+
+        this.app.ticker.add(this.gameLoop.bind(this));
     }
 
-    init(): void {
-        this.gameLoop();
-    }
-
-    gameLoop(): void {
+    gameLoop(delta: number): void {
         this.logic();
         this.draw();
-
-        window.requestAnimationFrame(() => this.gameLoop());
     }
 
     logic(): void {
-        // TODO: Calculate and position all the things.
+        // TODO: Each tick of the game, call methods on entities to update their state
     }
 
     draw(): void {
-        // TODO: Draw all the things.
+        // TODO: Call each entities render function to render it to the stage
+        this.app.renderer.render(this.app.stage);
     }
 }
