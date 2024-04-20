@@ -8,6 +8,7 @@ export class Board {
     private pegs: Peg[][];
     private pegRadius: number = 5;
     private pegDiameter: number = this.pegRadius * 2;
+    private ball: Ball;
 
     constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
         // TODO: Refactor to own method
@@ -35,10 +36,10 @@ export class Board {
 
             let xPosition = xOffset;
             for (let j = 0; j < pegsPerRow; j++) {
-                xPosition = xPosition + horSpaceBetweenPegs;
-    
                 let peg = new Peg(xPosition, yOffset, this.pegRadius);
                 this.pegs[i][j] = peg;
+
+                xPosition = xPosition + horSpaceBetweenPegs;
             }
     
             yOffset += verSpaceBetweenPegs;
@@ -49,16 +50,24 @@ export class Board {
         const slotWidth = 39;
         const slotHeight = 30;
         yOffset = (yOffset + this.pegDiameter) - verSpaceBetweenPegs;
-        let xPosition = 80;
+        let xPosition = 40;
         for (let i = 0; i < totalSlots; i++) {
             const slotValue = i === 0 || i === totalSlots - 1 ? "10" : "0";
             let slot = new Slot(xPosition, yOffset, slotWidth, slotHeight, slotValue);
             this.slots[i] = slot;
             xPosition += slotWidth + 2;
         }
+
+        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30);
+    }
+
+    dropBall() {
+
     }
 
     render(container: PIXI.Container) {
+        this.ball.render(container)
+
         this.pegs.forEach((row) => {
             row.forEach((peg) => {
                 peg.render(container);
