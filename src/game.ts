@@ -1,11 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { Board } from './entities/board';
 import { Scoreboard } from './entities/scoreboard';
+import { Button } from './entities/button';
 
 export class Game {
     private app: PIXI.Application;
     private scoreBoard: Scoreboard;
     private pegBoard: Board;
+    private playButton: Button;
     private canvasWidth: number = 800;
     private canvasHeight: number = 600;
 
@@ -20,6 +22,7 @@ export class Game {
 
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 3);
+        this.playButton = new Button(this.canvasWidth, this.canvasHeight, () => this.scoreBoard.deductCredits(10));
 
         this.app.ticker.add(this.gameLoop.bind(this));
     }
@@ -36,6 +39,7 @@ export class Game {
     draw(): void {
         this.scoreBoard.render(this.app.stage);
         this.pegBoard.render(this.app.stage);
+        this.playButton.render(this.app.stage);
         this.app.renderer.render(this.app.stage);
     }
 }
