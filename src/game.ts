@@ -22,7 +22,11 @@ export class Game {
 
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 3);
-        this.playButton = new Button(this.canvasWidth, this.canvasHeight, () => this.scoreBoard.deductCredits(10));
+        this.playButton = new Button(this.canvasWidth, this.canvasHeight, () => {
+            if (this.scoreBoard.deductCredits(10)) {
+                this.pegBoard.dropBall();
+            }
+        });
 
         this.app.ticker.add(this.gameLoop.bind(this));
     }
