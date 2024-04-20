@@ -33,20 +33,20 @@ export class Scoreboard {
             x: this.startX + this.textSpacerX,
             y: this.startY + this.textSpacerY
         });
-
-        this.recordPlay(20, true);
-        this.recordPlay(0, false);
-        this.recordPlay(20, true);
     }
 
-    deductCredits(toDeduct: number) {
+    deductCredits(toDeduct: number): boolean {
         if (this.balance - toDeduct < 0) {
             console.log(`No credits left to play.`);
-            return;
+
+            return false;
         }
         
         this.balance -= toDeduct;
+        this.balanceText.text = `Balance: ${this.balance}`;
         console.log(`Remaining balance: ${this.balance}`);
+
+        return true;
     }
 
     recordPlay(earnings: number, isProfit: boolean) {
@@ -62,7 +62,6 @@ export class Scoreboard {
             }
         });
 
-        // TODO: Calculate y offset for each text
         scoreText.x = this.startX + this.textSpacerX;
         scoreText.y = this.startY + (this.textSpacerY * 2) + (this.textSpacerY * (this.scoreTexts.length + 1));
 

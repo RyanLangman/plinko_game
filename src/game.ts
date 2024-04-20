@@ -18,7 +18,7 @@ export class Game {
         });
         document.body.appendChild(this.app.canvas);
 
-        this.scoreBoard = new Scoreboard(this.canvasWidth, this.canvasHeight);
+        this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 3);
 
         this.app.ticker.add(this.gameLoop.bind(this));
