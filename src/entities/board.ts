@@ -10,6 +10,7 @@ export class Board {
     private pegDiameter: number = this.pegRadius * 2;
 
     constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
+        // TODO: Refactor to own method
         const pegsPerRow = 5;
         this.pegs = [];
         this.slots = [];
@@ -43,6 +44,7 @@ export class Board {
             yOffset += verSpaceBetweenPegs;
         }
 
+        // TODO: Refactor to own method
         const totalSlots = pegsPerRow - 1
         const slotWidth = 39;
         const slotHeight = 30;
