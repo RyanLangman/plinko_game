@@ -2,8 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Peg } from './peg';
 import { Ball } from './ball';
 import { Slot } from './slot';
-
-type Coordinate = [number, number];
+import { Coordinate } from './types';
 
 export class Board {
     private slots: Slot[];
@@ -11,7 +10,6 @@ export class Board {
     private pegRadius: number = 5;
     private pegDiameter: number = this.pegRadius * 2;
     private ball: Ball;
-    private ballPosition: Coordinate = [0, 2]; // Always starts above middle peg, first row
 
     constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
         // TODO: Refactor to own method
@@ -57,23 +55,29 @@ export class Board {
         yOffset = (yOffset + this.pegDiameter) - verSpaceBetweenPegs;
         let xPosition = 40;
         for (let i = 0; i < totalSlots; i++) {
-            const slotValue = i === 0 || i === totalSlots - 1 ? "10" : "0";
+            const slotValue = i === 0 || i === totalSlots - 1 ? 10 : 0;
             let slot = new Slot(xPosition, yOffset, slotWidth, slotHeight, slotValue);
             this.slots[i] = slot;
             xPosition += slotWidth + 2;
         }
 
-        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30);
+        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30, [0, 2]);
     }
 
     dropBall() {
-        console.log('Dropping ball.');
+        // reflect the score on the score board
+        const maxIndex = this.slots.length - 1;
+        const slotToFallInto = Math.floor(Math.random() * (maxIndex - 0 + 1)) + 0;
+        const slot = this.slots[slotToFallInto];
+
+        console.log(`Puck lands in: ${slotToFallInto}`);
         
+        this.ball.setPosition(this.slots[slotToFallInto].centerCoordinate);
+
+        return slot.getSlotValue();
     }
 
     render(container: PIXI.Container) {
-        this.ball.render(container)
-
         this.pegs.forEach((row) => {
             row.forEach((peg) => {
                 peg.render(container);
@@ -83,5 +87,7 @@ export class Board {
         this.slots.forEach((slot) => {
             slot.render(container);
         });
+
+        this.ball.render(container);
     }
 }

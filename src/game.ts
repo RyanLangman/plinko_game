@@ -16,15 +16,17 @@ export class Game {
         await this.app.init({
             width: this.canvasWidth,
             height: this.canvasHeight,
-            backgroundColor: "#4a2899"
+            backgroundColor: "#e1e1e1"
         });
         document.body.appendChild(this.app.canvas);
 
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 3);
         this.playButton = new Button(this.canvasWidth, this.canvasHeight, () => {
-            if (this.scoreBoard.deductCredits(10)) {
-                this.pegBoard.dropBall();
+            const bet = 10;
+            if (this.scoreBoard.deductCredits(bet)) {
+                const earnings = this.pegBoard.dropBall();
+                this.scoreBoard.recordPlay(bet, earnings);
             }
         });
 
