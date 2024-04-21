@@ -10,10 +10,13 @@ export class Board {
     private pegRadius: number = 5;
     private pegDiameter: number = this.pegRadius * 2;
     private ball: Ball;
+    private pegPath: Coordinate[] = [];
+    private ballTraversalCoordinates: Coordinate[] = [];
+    private predeterminedSlot: Slot;
 
     constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
         // TODO: Refactor to own method
-        const maxPegsPerRow = 5;
+        const maxPegsPerRow = 11;
         this.pegs = [];
         this.slots = [];
 
@@ -54,9 +57,9 @@ export class Board {
         const slotHeight = 30;
         yOffset = (yOffset + this.pegDiameter) - verSpaceBetweenPegs;
         let xPosition = 40;
+        const slotValues = [10,5,2,1,0,1,2,5,10];
         for (let i = 0; i < totalSlots; i++) {
-            const slotValue = i === 0 || i === totalSlots - 1 ? 10 : 0;
-            let slot = new Slot(xPosition, yOffset, slotWidth, slotHeight, slotValue);
+            let slot = new Slot(xPosition, yOffset, slotWidth, slotHeight, slotValues[i]);
             this.slots[i] = slot;
             xPosition += slotWidth + 2;
         }
@@ -65,16 +68,87 @@ export class Board {
     }
 
     dropBall() {
-        // reflect the score on the score board
         const maxIndex = this.slots.length - 1;
         const slotToFallInto = Math.floor(Math.random() * (maxIndex - 0 + 1)) + 0;
-        const slot = this.slots[slotToFallInto];
+        this.predeterminedSlot = this.slots[slotToFallInto];
 
         console.log(`Puck lands in: ${slotToFallInto}`);
-        
-        this.ball.setPosition(this.slots[slotToFallInto].centerCoordinate);
 
-        return slot.getSlotValue();
+        const bottomPegRow = this.pegs.length - 1;
+        if (Math.round(Math.random()) == 1) {
+            this.pegPath.unshift([bottomPegRow, slotToFallInto]);
+        } else {
+            this.pegPath.unshift([bottomPegRow, slotToFallInto + 1]);
+        }
+
+        for (let i = this.pegs.length - 1; i > 0; i--) {
+            if (i == 0) {
+                break;
+            }
+
+            const lastCoordinate = this.pegPath[0];
+            let aboveLeftPegCoord: Coordinate = [0,0];
+            let aboveLeftPeg: Peg | undefined;
+            let aboveRightPegCoord: Coordinate = [0,0];
+            let aboveRightPeg: Peg | undefined;
+
+            if (i % 2 != 0) {
+                aboveLeftPegCoord = [i - 1, lastCoordinate[1]];
+                aboveLeftPeg = this.pegs[aboveLeftPegCoord[0]][aboveLeftPegCoord[1]];
+
+                aboveRightPegCoord = [i - 1, lastCoordinate[1] + 1];
+                aboveRightPeg = this.pegs[aboveRightPegCoord[0]][aboveRightPegCoord[1]];
+            } else {
+                aboveLeftPegCoord = [i - 1, lastCoordinate[1] - 1];
+                aboveLeftPeg = this.pegs[aboveLeftPegCoord[0]][aboveLeftPegCoord[1]];
+
+                aboveRightPegCoord = [i - 1, lastCoordinate[1]];
+                aboveRightPeg = this.pegs[aboveRightPegCoord[0]][aboveRightPegCoord[1]];
+            }
+
+            if (aboveLeftPeg != undefined && aboveRightPeg != undefined) {
+                if (Math.round(Math.random()) == 1) {
+                    this.pegPath.unshift(aboveLeftPegCoord);
+                } else {
+                    this.pegPath.unshift(aboveRightPegCoord);
+                }
+            } else if (aboveRightPegCoord == undefined) {
+                this.pegPath.unshift(aboveLeftPegCoord);
+            } else {
+                this.pegPath.unshift(aboveRightPegCoord);
+            }
+        }
+
+        this.pegPath.forEach((pegArrayPosition) => {
+            const peg = this.pegs[pegArrayPosition[0]][pegArrayPosition[1]]
+
+            if (peg == undefined) {
+                console.error('Peg not found, cannot move ball.');
+                return;
+            }
+
+            const nextPosition = peg.getPosition();
+            nextPosition[1] -= 15;
+
+            this.ballTraversalCoordinates.push(nextPosition);
+        })
+
+        this.ballTraversalCoordinates.push(this.predeterminedSlot.centerCoordinate);
+        
+        return this.predeterminedSlot.getSlotValue();
+    }
+
+    moveBall() {
+        if (this.ballTraversalCoordinates.length > 0) {
+            const nextPosition = this.ballTraversalCoordinates.shift();
+
+            if (nextPosition == undefined) {
+                console.error('No coordinates found to move ball.');
+                return;
+            }
+
+            this.ball.setPosition(nextPosition);
+        }
     }
 
     render(container: PIXI.Container) {
