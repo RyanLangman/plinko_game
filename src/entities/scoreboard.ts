@@ -4,6 +4,7 @@ export class Scoreboard {
     private board: PIXI.Graphics;
     private scoreTexts: Array<PIXI.Text> = [];
     private balanceText: PIXI.Text;
+    // Abstract, this should rather be in a server and not calculated against locally
     private balance: number;
     private readonly textSpacerX: number = 10;
     private readonly textSpacerY: number = 15;
@@ -49,11 +50,12 @@ export class Scoreboard {
         return true;
     }
 
-    recordPlay(earnings: number, isProfit: boolean) {
+    recordPlay(bet: number, earnings: number) {
+        this.balance += earnings;
         let scoreText = new PIXI.Text({
-            text: isProfit ?
+            text: earnings >= bet ?
                 `Won ${earnings} credits` :
-                `Lost ${earnings} credits`,
+                `Lost ${bet - earnings} credits`,
             style: {
                 fontFamily: 'Arial',
                 fontSize: 14,
