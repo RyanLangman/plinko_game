@@ -2,7 +2,8 @@ import * as PIXI from 'pixi.js';
 import { Peg } from './peg';
 import { Ball } from './ball';
 import { Slot } from './slot';
-import { Coordinate } from './types';
+import { Coordinate } from '../types/types';
+import { PlinkoBackendService } from '../backend/plinko-backend-service';
 
 export class Board {
     private slots: Slot[];
@@ -16,7 +17,7 @@ export class Board {
 
     constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
         // TODO: Refactor to own method
-        const maxPegsPerRow = 11;
+        const maxPegsPerRow = 10;
         this.pegs = [];
         this.slots = [];
 
@@ -67,18 +68,16 @@ export class Board {
         this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30, [0, 2]);
     }
 
-    dropBall() {
-        const maxIndex = this.slots.length - 1;
-        const slotToFallInto = Math.floor(Math.random() * (maxIndex - 0 + 1)) + 0;
-        this.predeterminedSlot = this.slots[slotToFallInto];
+    dropBall(slotIndex: number) {
+        this.predeterminedSlot = this.slots[slotIndex];
 
-        console.log(`Puck lands in: ${slotToFallInto}`);
+        console.log(`Puck lands in: ${slotIndex}`);
 
         const bottomPegRow = this.pegs.length - 1;
         if (Math.round(Math.random()) == 1) {
-            this.pegPath.unshift([bottomPegRow, slotToFallInto]);
+            this.pegPath.unshift([bottomPegRow, slotIndex]);
         } else {
-            this.pegPath.unshift([bottomPegRow, slotToFallInto + 1]);
+            this.pegPath.unshift([bottomPegRow, slotIndex + 1]);
         }
 
         for (let i = this.pegs.length - 1; i > 0; i--) {
@@ -138,7 +137,7 @@ export class Board {
         return this.predeterminedSlot.getSlotValue();
     }
 
-    moveBall() {
+    moveBall(displayLatestScore: Function) {
         if (this.ballTraversalCoordinates.length > 0) {
             const nextPosition = this.ballTraversalCoordinates.shift();
 
@@ -148,6 +147,10 @@ export class Board {
             }
 
             this.ball.setPosition(nextPosition);
+
+            if (this.ballTraversalCoordinates.length == 0) {
+                displayLatestScore();
+            }
         }
     }
 

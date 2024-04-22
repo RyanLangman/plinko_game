@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Board } from './entities/board';
 import { Scoreboard } from './entities/scoreboard';
 import { Button } from './entities/button';
+import { PlinkoBackendService } from './backend/plinko-backend-service';
 
 export class Game {
     private app: PIXI.Application;
@@ -12,6 +13,7 @@ export class Game {
     private canvasHeight: number = 600;
     private updateInterval: number = 1000;
     private lastUpdateTime: number = 0;
+    private backendService: PlinkoBackendService = new PlinkoBackendService();
 
     async init() {
         this.app = new PIXI.Application();
@@ -24,12 +26,10 @@ export class Game {
 
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 7);
-        this.playButton = new Button(this.canvasWidth, this.canvasHeight, () => {
-            const bet = 10;
-            if (this.scoreBoard.deductCredits(bet)) {
-                const result = this.pegBoard.dropBall();
-                this.scoreBoard.recordPlay(bet, result);
-            }
+        this.playButton = new Button(this.canvasWidth, this.canvasHeight, async () => {
+            const response = await this.backendService.play(1, 10);
+            this.scoreBoard.updateBalance(response.newBalance, response.slotEarnings, 10);
+            this.pegBoard.dropBall(response.slot);
         });
 
         this.app.ticker.add(this.gameLoop.bind(this));
@@ -46,7 +46,7 @@ export class Game {
 
         if (elapsedTimeSinceLastUpdate >= this.updateInterval) {
             this.lastUpdateTime = currentTime;
-            this.pegBoard.moveBall();
+            this.pegBoard.moveBall(() => this.scoreBoard.displayLatestScore());
         }
     }
 
