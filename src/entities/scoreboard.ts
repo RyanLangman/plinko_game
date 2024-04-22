@@ -2,10 +2,10 @@ import * as PIXI from 'pixi.js';
 
 export class Scoreboard {
     private board: PIXI.Graphics;
+    private balance: number;
+    private scoreTextsBuffer: Array<PIXI.Text> = [];
     private scoreTexts: Array<PIXI.Text> = [];
     private balanceText: PIXI.Text;
-    // Abstract, this should rather be in a server and not calculated against locally
-    private balance: number;
     private readonly textSpacerX: number = 10;
     private readonly textSpacerY: number = 15;
     private readonly startX: number;
@@ -35,23 +35,10 @@ export class Scoreboard {
             y: this.startY + this.textSpacerY
         });
     }
+    
+    updateBalance(newBalance: number, earnings: number, bet: number) {
+        this.balance = newBalance;
 
-    deductCredits(toDeduct: number): boolean {
-        if (this.balance - toDeduct < 0) {
-            console.log(`No credits left to play.`);
-
-            return false;
-        }
-        
-        this.balance -= toDeduct;
-        this.balanceText.text = `Balance: ${this.balance}`;
-        console.log(`Remaining balance: ${this.balance}`);
-
-        return true;
-    }
-
-    recordPlay(bet: number, earnings: number) {
-        this.balance += earnings;
         let scoreText = new PIXI.Text({
             text: earnings >= bet ?
                 `Won ${earnings} credits` :
@@ -67,7 +54,17 @@ export class Scoreboard {
         scoreText.x = this.startX + this.textSpacerX;
         scoreText.y = this.startY + (this.textSpacerY * 2) + (this.textSpacerY * (this.scoreTexts.length + 1));
 
-        this.scoreTexts.push(scoreText);
+        this.scoreTextsBuffer.push(scoreText);
+    }
+
+    displayLatestScore() {
+        this.balanceText.text = `Balance: ${this.balance}`;
+        this.balanceText.text = `Balance: ${this.balance}`;
+
+        const lastPlay = this.scoreTextsBuffer.shift();
+        if (lastPlay) {
+            this.scoreTexts.push(lastPlay);
+        }
     }
 
     render(container: PIXI.Container) {

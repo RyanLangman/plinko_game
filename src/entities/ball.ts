@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Coordinate } from './types';
+import { Coordinate } from '../types/types';
 
 export class Ball {
     private graphic: PIXI.Graphics;
