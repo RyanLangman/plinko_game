@@ -5,6 +5,7 @@ import { PlayButton } from './entities/play-button';
 import { PlinkoBackendService } from './backend/plinko-backend-service';
 import { Splash } from './entities/splash';
 import { SoundPlayer } from './entities/sound-player';
+import { SoundKey } from './enums/sound-keys';
 
 export class Game {
     private app: PIXI.Application;
@@ -15,8 +16,6 @@ export class Game {
     private playButton: PlayButton;
     private canvasWidth: number = 800;
     private canvasHeight: number = 600;
-    private updateInterval: number = 1000;
-    private lastUpdateTime: number = 0;
     private backendService: PlinkoBackendService = new PlinkoBackendService();
     private shouldPlayWinningSlotSound: boolean;
     private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
@@ -31,8 +30,8 @@ export class Game {
         });
 
         document.body.appendChild(this.app.canvas);
-
-        this.loadAssets();
+        
+        await this.loadAssets();
 
         this.splash = new Splash();
         await this.splash.init(this.canvasWidth, this.canvasHeight, async () => await this.startGame());
@@ -42,18 +41,27 @@ export class Game {
         this.app.ticker.add(this.gameLoop.bind(this));
     }
 
-    loadAssets() {
+    async loadAssets() {
+        const sheetTexture = await PIXI.Assets.load('assets/ui/spritesheet.png');
+        PIXI.Assets.add({
+            alias: 'plinko-sheet',
+            src: 'assets/ui/spritesheet.json',
+            data: {texture: sheetTexture}
+        });
 
+        await PIXI.Assets.load('plinko-sheet')
     }
 
     async startGame() {
         this.gameStarted = true;
-        this.soundPlayer.play("backgroundMusic");
+
         this.splash.remove(this.app.stage);
+
         this.scoreBoard = new Scoreboard(this.canvasWidth);
+
         this.pegBoard = new Board(7);
-        this.playButton = new PlayButton();
-        await this.playButton.init(this.canvasWidth, this.canvasHeight, async () => {
+
+        this.playButton = new PlayButton(this.canvasWidth, this.canvasHeight, async () => {
             this.playButton.disable();
 
             const response = await this.backendService.play(1, 10);
@@ -64,32 +72,27 @@ export class Game {
 
             this.pegBoard.dropBall(response.slot);
         });
+
+        // this.soundPlayer.play(SoundKey.BackgroundMusic);
     }
 
-    gameLoop(ticker: PIXI.Ticker): void {
+    gameLoop(): void {
         this.logic();
         this.draw();
     }
 
     logic(): void {
         if (this.gameStarted) {
-            const currentTime = Date.now();
-            const elapsedTimeSinceLastUpdate = currentTime - this.lastUpdateTime;
-
-            if (elapsedTimeSinceLastUpdate >= this.updateInterval) {
-                this.lastUpdateTime = currentTime;
-
-                this.pegBoard.moveBall(() => {
-                    this.scoreBoard.displayLatestScore();
-                    this.playButton.enable();
-                    
-                    if (this.shouldPlayWinningSlotSound) {
-                        this.soundPlayer.play("winningSlotSound");
-                    } else {
-                        this.soundPlayer.play("losingSlotSound");
-                    }
-                });
-            }
+            this.pegBoard.moveBall(() => {
+                this.scoreBoard.displayLatestScore();
+                this.playButton.enable();
+                
+                if (this.shouldPlayWinningSlotSound) {
+                    this.soundPlayer.play("winningSlotSound");
+                } else {
+                    this.soundPlayer.play("losingSlotSound");
+                }
+            });
         }
     }
 
@@ -99,7 +102,6 @@ export class Game {
             this.pegBoard.render(this.app.stage);
             this.playButton.render(this.app.stage);
 
-            this.app.renderer.render(this.app.stage);
         } else {
             this.splash.render(this.app.stage);
         }
