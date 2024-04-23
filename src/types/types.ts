@@ -11,7 +11,8 @@ type APIResponse<T> = {
 type PlayResponse = {
     slotEarnings: number,
     newBalance: number,
-    slot: number
+    slot: number,
+    isWinningSlot: boolean
 }
 
 export { Coordinate, Player, APIResponse, PlayResponse };

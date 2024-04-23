@@ -1,12 +1,14 @@
 import * as PIXI from 'pixi.js';
 import { Coordinate } from '../types/types';
 import * as TweenJs from '@tweenjs/tween.js'
+import { SoundPlayer } from './sound-player';
 
 export class Ball {
     private graphic: PIXI.Graphics;
     private ballRadius: number = 10;
     private ballDiameter: number = this.ballRadius * 2;
     private coordinate: Coordinate;
+    private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
 
     constructor(x: number, y: number, initialPosition: Coordinate) {
         this.graphic = new PIXI.Graphics();
@@ -26,7 +28,10 @@ export class Ball {
         let firstTween = new TweenJs.Tween(this.graphic)
             .to({ x: firstCoordinate[0], y: firstCoordinate[1] })
             .duration(600)
-            .easing(TweenJs.Easing.Exponential.Out);
+            .easing(TweenJs.Easing.Exponential.Out)
+            .onComplete(() => {
+                this.soundPlayer.play("pegCollideSound");
+            });
 
         let currentTween = firstTween;
 
@@ -37,7 +42,10 @@ export class Ball {
             const tween = new TweenJs.Tween(this.graphic)
                 .to({ x: coord[0], y: coord[1] })
                 .duration(400)
-                .easing(TweenJs.Easing.Quadratic.InOut);
+                .easing(TweenJs.Easing.Quadratic.InOut)
+                .onComplete(() => {
+                    this.soundPlayer.play("pegCollideSound");
+                });
 
             currentTween.chain(tween);
             currentTween = tween;
@@ -49,7 +57,7 @@ export class Ball {
                 const bounceBackTween = new TweenJs.Tween(this.graphic)
                     .to({ x: coord[0] + xBounceModifier, y: coord[1] - 5 })
                     .duration(400)
-                    .easing(TweenJs.Easing.Cubic.InOut)
+                    .easing(TweenJs.Easing.Cubic.InOut);
 
                 currentTween.chain(bounceBackTween);
                 currentTween = bounceBackTween;

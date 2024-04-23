@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/howler": "2.2.11",
     "ts-loader": "9.5.1",
     "typescript": "5.4.5",
     "webpack": "5.91.0",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@tweenjs/tween.js": "23.1.1",
-    "pixi.js": "8.1.0"
+    "pixi.js": "8.1.0",
+    "howler": "2.2.4"
   }
 }

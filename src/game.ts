@@ -4,6 +4,7 @@ import { Scoreboard } from './entities/scoreboard';
 import { PlayButton } from './entities/play-button';
 import { PlinkoBackendService } from './backend/plinko-backend-service';
 import { Splash } from './entities/splash';
+import { SoundPlayer } from './entities/sound-player';
 
 export class Game {
     private app: PIXI.Application;
@@ -17,6 +18,8 @@ export class Game {
     private updateInterval: number = 1000;
     private lastUpdateTime: number = 0;
     private backendService: PlinkoBackendService = new PlinkoBackendService();
+    private shouldPlayWinningSlotSound: boolean;
+    private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
 
     async init() {
         this.app = new PIXI.Application();
@@ -28,7 +31,9 @@ export class Game {
         });
 
         document.body.appendChild(this.app.canvas);
-        
+
+        this.loadAssets();
+
         this.splash = new Splash();
         await this.splash.init(this.canvasWidth, this.canvasHeight, async () => await this.startGame());
 
@@ -37,18 +42,26 @@ export class Game {
         this.app.ticker.add(this.gameLoop.bind(this));
     }
 
+    loadAssets() {
+
+    }
+
     async startGame() {
         this.gameStarted = true;
+        this.soundPlayer.play("backgroundMusic");
         this.splash.remove(this.app.stage);
         this.scoreBoard = new Scoreboard(this.canvasWidth);
-        this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 7);
+        this.pegBoard = new Board(7);
         this.playButton = new PlayButton();
         await this.playButton.init(this.canvasWidth, this.canvasHeight, async () => {
             this.playButton.disable();
 
             const response = await this.backendService.play(1, 10);
+
+            this.shouldPlayWinningSlotSound = response.isWinningSlot
             
             this.scoreBoard.updateBalance(response.newBalance, response.slotEarnings, 10);
+
             this.pegBoard.dropBall(response.slot);
         });
     }
@@ -65,9 +78,16 @@ export class Game {
 
             if (elapsedTimeSinceLastUpdate >= this.updateInterval) {
                 this.lastUpdateTime = currentTime;
+
                 this.pegBoard.moveBall(() => {
                     this.scoreBoard.displayLatestScore();
                     this.playButton.enable();
+                    
+                    if (this.shouldPlayWinningSlotSound) {
+                        this.soundPlayer.play("winningSlotSound");
+                    } else {
+                        this.soundPlayer.play("losingSlotSound");
+                    }
                 });
             }
         }
