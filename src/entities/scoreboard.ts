@@ -59,7 +59,6 @@ export class Scoreboard {
 
     displayLatestScore() {
         this.balanceText.text = `Balance: ${this.balance}`;
-        this.balanceText.text = `Balance: ${this.balance}`;
 
         const lastPlay = this.scoreTextsBuffer.shift();
         if (lastPlay) {
@@ -73,6 +72,6 @@ export class Scoreboard {
 
         this.scoreTexts.forEach((scoreText) => {
             container.addChild(scoreText);
-        })
+        });
     }
 }

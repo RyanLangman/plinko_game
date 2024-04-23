@@ -3,7 +3,6 @@ import { Peg } from './peg';
 import { Ball } from './ball';
 import { Slot } from './slot';
 import { Coordinate } from '../types/types';
-import { PlinkoBackendService } from '../backend/plinko-backend-service';
 
 export class Board {
     private slots: Slot[];
@@ -11,7 +10,6 @@ export class Board {
     private pegRadius: number = 5;
     private pegDiameter: number = this.pegRadius * 2;
     private ball: Ball;
-    private pegPath: Coordinate[] = [];
     private ballTraversalCoordinates: Coordinate[] = [];
     private predeterminedSlot: Slot;
 
@@ -69,15 +67,18 @@ export class Board {
     }
 
     dropBall(slotIndex: number) {
+        let pegPath: Coordinate[] = [];
+        this.ball.setPosition(40 + ((30 + this.pegDiameter) * 2), 30);
+        
         this.predeterminedSlot = this.slots[slotIndex];
 
         console.log(`Puck lands in: ${slotIndex}`);
 
         const bottomPegRow = this.pegs.length - 1;
         if (Math.round(Math.random()) == 1) {
-            this.pegPath.unshift([bottomPegRow, slotIndex]);
+            pegPath.unshift([bottomPegRow, slotIndex]);
         } else {
-            this.pegPath.unshift([bottomPegRow, slotIndex + 1]);
+            pegPath.unshift([bottomPegRow, slotIndex + 1]);
         }
 
         for (let i = this.pegs.length - 1; i > 0; i--) {
@@ -85,7 +86,7 @@ export class Board {
                 break;
             }
 
-            const lastCoordinate = this.pegPath[0];
+            const lastCoordinate = pegPath[0];
             let aboveLeftPegCoord: Coordinate = [0,0];
             let aboveLeftPeg: Peg | undefined;
             let aboveRightPegCoord: Coordinate = [0,0];
@@ -107,18 +108,18 @@ export class Board {
 
             if (aboveLeftPeg != undefined && aboveRightPeg != undefined) {
                 if (Math.round(Math.random()) == 1) {
-                    this.pegPath.unshift(aboveLeftPegCoord);
+                    pegPath.unshift(aboveLeftPegCoord);
                 } else {
-                    this.pegPath.unshift(aboveRightPegCoord);
+                    pegPath.unshift(aboveRightPegCoord);
                 }
             } else if (aboveRightPegCoord == undefined) {
-                this.pegPath.unshift(aboveLeftPegCoord);
+                pegPath.unshift(aboveLeftPegCoord);
             } else {
-                this.pegPath.unshift(aboveRightPegCoord);
+                pegPath.unshift(aboveRightPegCoord);
             }
         }
 
-        this.pegPath.forEach((pegArrayPosition) => {
+        pegPath.forEach((pegArrayPosition) => {
             const peg = this.pegs[pegArrayPosition[0]][pegArrayPosition[1]]
 
             if (peg == undefined) {
@@ -137,20 +138,10 @@ export class Board {
         return this.predeterminedSlot.getSlotValue();
     }
 
-    moveBall(displayLatestScore: Function) {
+    moveBall(onComplete: Function) {
         if (this.ballTraversalCoordinates.length > 0) {
-            const nextPosition = this.ballTraversalCoordinates.shift();
-
-            if (nextPosition == undefined) {
-                console.error('No coordinates found to move ball.');
-                return;
-            }
-
-            this.ball.setPosition(nextPosition);
-
-            if (this.ballTraversalCoordinates.length == 0) {
-                displayLatestScore();
-            }
+            this.ball.setAnimationTimeline(this.ballTraversalCoordinates, () => onComplete());
+            this.ballTraversalCoordinates = [];
         }
     }
 
