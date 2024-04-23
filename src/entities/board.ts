@@ -3,6 +3,7 @@ import { Peg } from './peg';
 import { Ball } from './ball';
 import { Slot } from './slot';
 import { Coordinate } from '../types/types';
+import {Howl, Howler} from 'howler';
 
 export class Board {
     private slots: Slot[];
@@ -13,7 +14,7 @@ export class Board {
     private ballTraversalCoordinates: Coordinate[] = [];
     private predeterminedSlot: Slot;
 
-    constructor(canvasWidth: number, canvasHeight: number, levels: number = 3) {
+    constructor(levels: number = 3) {
         // TODO: Refactor to own method
         const maxPegsPerRow = 10;
         this.pegs = [];
@@ -71,8 +72,6 @@ export class Board {
         this.ball.setPosition(40 + ((30 + this.pegDiameter) * 2), 30);
         
         this.predeterminedSlot = this.slots[slotIndex];
-
-        console.log(`Puck lands in: ${slotIndex}`);
 
         const bottomPegRow = this.pegs.length - 1;
         if (Math.round(Math.random()) == 1) {

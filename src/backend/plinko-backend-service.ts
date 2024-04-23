@@ -45,7 +45,7 @@ export class PlinkoBackendService {
 
         console.log(`Player ${playerId} has ${playerBalance} credits left.`);
 
-        const [slotIndex, earnings]  = this.chooseSlotToLandIn();
+        const [slotIndex, earnings, isWinningSlot]  = this.chooseSlotToLandIn();
 
         playerBalance += earnings;
 
@@ -57,19 +57,22 @@ export class PlinkoBackendService {
         response.result = {
             newBalance: playerBalance,
             slotEarnings: earnings,
-            slot: slotIndex
+            slot: slotIndex,
+            isWinningSlot: isWinningSlot
         } as PlayResponse;
 
         return response;
     }
 
-    private chooseSlotToLandIn(): number[] {
+    private chooseSlotToLandIn(): any[] {
         const slotValues = [10, 5, 2, 1, 0, 1, 2, 5, 10];
         const slotWeighting = [5, 10, 20, 40, 50, 40, 20, 10, 5]
 
         const chosenSlot = this.randomByWeight(Array.from(slotValues.keys()), slotWeighting);
 
-        return [chosenSlot, slotValues[chosenSlot]];
+        const isWinningSlot = chosenSlot == 0 || chosenSlot == slotValues.length - 1 ?
+            true : false;
+        return [chosenSlot, slotValues[chosenSlot], isWinningSlot];
     }
 
     // Taken from: https://dev.to/jacktt/understanding-the-weighted-random-algorithm-581p
