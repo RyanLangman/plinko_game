@@ -5,6 +5,7 @@ export class Button {
     private colour: string = "blue";
     private readonly paddingFromEdge: number = 40;
     private buttonText: PIXI.Text;
+    private enabled: boolean = true;
 
     constructor(canvasWidth: number, canvasHeight: number, clickHandler: Function) {
         this.graphic = new PIXI.Graphics();
@@ -15,7 +16,11 @@ export class Button {
         );
         this.graphic.fill(this.colour);
         this.graphic.interactive = true;
-        this.graphic.on('pointerdown', (event) => clickHandler());
+        this.graphic.on('pointerdown', (event) => {
+            if (this.enabled) {
+                clickHandler();
+            }
+        });
 
         this.buttonText = new PIXI.Text({
             text: "PLAY",
@@ -33,6 +38,14 @@ export class Button {
             canvasWidth / 2,
             canvasHeight - (this.paddingFromEdge + 20)
         );
+    }
+
+    enable(){
+        this.enabled = true;
+    };
+
+    disable() {
+        this.enabled = false;
     }
 
     render(container: PIXI.Container) {

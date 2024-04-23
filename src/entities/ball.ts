@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Coordinate } from '../types/types';
+import * as TweenJs from '@tweenjs/tween.js'
 
 export class Ball {
     private graphic: PIXI.Graphics;
@@ -15,15 +16,58 @@ export class Ball {
         this.coordinate = initialPosition;
     }
 
-    setPosition(coordinate: Coordinate) {
-        console.log(`Current position: ${this.graphic.x},${this.graphic.y}. New position: ${coordinate}.`)
-        this.graphic.position.set(
-            coordinate[0],
-            coordinate[1]
-        );
+    setAnimationTimeline(coordinates: Coordinate[], onComplete: Function) {
+        const firstCoordinate = coordinates.shift();
+
+        if (firstCoordinate == undefined) {
+            throw new Error("Unable to tween, missing coordinates.");
+        }
+
+        let firstTween = new TweenJs.Tween(this.graphic)
+            .to({ x: firstCoordinate[0], y: firstCoordinate[1] })
+            .duration(600)
+            .easing(TweenJs.Easing.Exponential.Out);
+
+        let currentTween = firstTween;
+
+        for (let i = 0; i < coordinates.length; i++) {
+            const coord = coordinates[i];
+            const nextCoord = coordinates[i + 1];
+
+            const tween = new TweenJs.Tween(this.graphic)
+                .to({ x: coord[0], y: coord[1] })
+                .duration(400)
+                .easing(TweenJs.Easing.Quadratic.InOut);
+
+            currentTween.chain(tween);
+            currentTween = tween;
+
+            if (nextCoord != undefined) {
+                const xBounceModifier = nextCoord[0] > coord[0] ?
+                    15 : -15;
+
+                const bounceBackTween = new TweenJs.Tween(this.graphic)
+                    .to({ x: coord[0] + xBounceModifier, y: coord[1] - 5 })
+                    .duration(400)
+                    .easing(TweenJs.Easing.Cubic.InOut)
+
+                currentTween.chain(bounceBackTween);
+                currentTween = bounceBackTween;
+            }
+            else {
+                currentTween.onComplete(() => onComplete());
+            }
+        }
+
+        firstTween.start();
+    }
+
+    setPosition(x: number, y: number) {
+        this.graphic.position.set(x, y)
     }
 
     render(container: PIXI.Container) {
         container.addChild(this.graphic);
+        TweenJs.update();
     }
 }

@@ -27,6 +27,7 @@ export class Game {
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 7);
         this.playButton = new Button(this.canvasWidth, this.canvasHeight, async () => {
+            this.playButton.disable();
             const response = await this.backendService.play(1, 10);
             this.scoreBoard.updateBalance(response.newBalance, response.slotEarnings, 10);
             this.pegBoard.dropBall(response.slot);
@@ -46,7 +47,10 @@ export class Game {
 
         if (elapsedTimeSinceLastUpdate >= this.updateInterval) {
             this.lastUpdateTime = currentTime;
-            this.pegBoard.moveBall(() => this.scoreBoard.displayLatestScore());
+            this.pegBoard.moveBall(() => {
+                this.scoreBoard.displayLatestScore();
+                this.playButton.enable();
+            });
         }
     }
 
