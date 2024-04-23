@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Board } from './entities/board';
 import { Scoreboard } from './entities/scoreboard';
-import { Button } from './entities/button';
+import { PlayButton } from './entities/play-button';
 import { PlinkoBackendService } from './backend/plinko-backend-service';
 import { Splash } from './entities/splash';
 
@@ -11,7 +11,7 @@ export class Game {
     private splash: Splash;
     private scoreBoard: Scoreboard;
     private pegBoard: Board;
-    private playButton: Button;
+    private playButton: PlayButton;
     private canvasWidth: number = 800;
     private canvasHeight: number = 600;
     private updateInterval: number = 1000;
@@ -30,21 +30,24 @@ export class Game {
         document.body.appendChild(this.app.canvas);
         
         this.splash = new Splash();
-        await this.splash.init(this.canvasWidth, this.canvasHeight, () => this.startGame());
+        await this.splash.init(this.canvasWidth, this.canvasHeight, async () => await this.startGame());
 
         this.app.renderer.render(this.app.stage);
-        
+
         this.app.ticker.add(this.gameLoop.bind(this));
     }
 
-    startGame() {
+    async startGame() {
         this.gameStarted = true;
         this.splash.remove(this.app.stage);
         this.scoreBoard = new Scoreboard(this.canvasWidth);
         this.pegBoard = new Board(this.canvasWidth, this.canvasHeight, 7);
-        this.playButton = new Button(this.canvasWidth, this.canvasHeight, async () => {
+        this.playButton = new PlayButton();
+        await this.playButton.init(this.canvasWidth, this.canvasHeight, async () => {
             this.playButton.disable();
+
             const response = await this.backendService.play(1, 10);
+            
             this.scoreBoard.updateBalance(response.newBalance, response.slotEarnings, 10);
             this.pegBoard.dropBall(response.slot);
         });
