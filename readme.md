@@ -3,6 +3,8 @@ Hi [Interviewer's Name],
 
 Thank you for taking the time to review my attempt at the Plinko game assessment. Below I've outlined the tech stack, provided a getting started guide, shared notes on my approach and shared thoughts on potential issues and further development.
 
+![Animation](https://github.com/RyanLangman/plinko_game/assets/110283613/ab0371d4-f5c4-42af-a265-3f7db8d6169c)
+
 ## Getting Started
 To run the application, follow these steps:
 
