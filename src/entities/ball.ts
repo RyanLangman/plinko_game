@@ -25,12 +25,14 @@ export class Ball {
             throw new Error("Unable to tween, missing coordinates.");
         }
 
+        const speed = 2.5;
+
         let firstTween = new TweenJs.Tween(this.graphic)
             .to({ x: firstCoordinate[0], y: firstCoordinate[1] })
-            .duration(600)
-            .easing(TweenJs.Easing.Exponential.Out)
+            .duration(10)
+            .easing(TweenJs.Easing.Quadratic.Out)
             .onComplete(() => {
-                this.soundPlayer.play("pegCollideSound");
+                this.soundPlayer.play("pegCollideSound1");
             });
 
         let currentTween = firstTween;
@@ -41,23 +43,44 @@ export class Ball {
 
             const tween = new TweenJs.Tween(this.graphic)
                 .to({ x: coord[0], y: coord[1] })
-                .duration(400)
-                .easing(TweenJs.Easing.Quadratic.InOut)
-                .onComplete(() => {
-                    this.soundPlayer.play("pegCollideSound");
+                .duration(75 * speed)
+                .easing(TweenJs.Easing.Quadratic.In)
+                .onStart(() => {
+                    this.soundPlayer.play("pegCollideSound1");
                 });
 
             currentTween.chain(tween);
             currentTween = tween;
 
             if (nextCoord != undefined) {
+                if (Math.random() > 0.5) {
+                    const bounceUp = new TweenJs.Tween(this.graphic)
+                    .to({ x: coord[0], y: coord[1] - 15 })
+                    .duration(100 * speed)
+                    .easing(TweenJs.Easing.Quadratic.Out);
+
+                    currentTween.chain(bounceUp);
+                    currentTween = bounceUp;
+
+                    const bounceDown = new TweenJs.Tween(this.graphic)
+                        .to({ x: coord[0], y: coord[1] })
+                        .duration(100 * speed)
+                        .easing(TweenJs.Easing.Quadratic.In)
+                        .onStart(() => {
+                            this.soundPlayer.play("pegCollideSound2");
+                        });
+
+                    currentTween.chain(bounceDown);
+                    currentTween = bounceDown;
+                }
+
                 const xBounceModifier = nextCoord[0] > coord[0] ?
                     15 : -15;
 
                 const bounceBackTween = new TweenJs.Tween(this.graphic)
-                    .to({ x: coord[0] + xBounceModifier, y: coord[1] - 5 })
-                    .duration(400)
-                    .easing(TweenJs.Easing.Cubic.InOut);
+                    .to({ x: coord[0] + xBounceModifier, y: coord[1] - 10 })
+                    .duration(100 * speed)
+                    .easing(TweenJs.Easing.Quadratic.Out);
 
                 currentTween.chain(bounceBackTween);
                 currentTween = bounceBackTween;

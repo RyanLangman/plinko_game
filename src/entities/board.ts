@@ -3,7 +3,6 @@ import { Peg } from './peg';
 import { Ball } from './ball';
 import { Slot } from './slot';
 import { Coordinate } from '../types/types';
-import {Howl, Howler} from 'howler';
 
 export class Board {
     private slots: Slot[];
@@ -15,7 +14,6 @@ export class Board {
     private predeterminedSlot: Slot;
 
     constructor(levels: number = 3) {
-        // TODO: Refactor to own method
         const maxPegsPerRow = 10;
         this.pegs = [];
         this.slots = [];
@@ -51,7 +49,6 @@ export class Board {
             yOffset += verSpaceBetweenPegs;
         }
 
-        // TODO: Refactor to own method
         const totalSlots = maxPegsPerRow - 1
         const slotWidth = 39;
         const slotHeight = 30;
@@ -127,7 +124,7 @@ export class Board {
             }
 
             const nextPosition = peg.getPosition();
-            nextPosition[1] -= 15;
+            nextPosition[1] -= this.pegDiameter;
 
             this.ballTraversalCoordinates.push(nextPosition);
         })

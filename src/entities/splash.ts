@@ -5,10 +5,7 @@ export class Splash {
   private startText: PIXI.Text;
 
   async init(canvasWidth: number, canvasHeight: number, onClick: Function) {
-    const texture = await PIXI.Assets.load('/assets/ui/btn-play-enabled.png');
-    const disabledTexture = await PIXI.Assets.load('/assets/ui/btn-play-disabled.png');
-
-    this.startButton = new PIXI.Sprite(texture);
+    this.startButton = new PIXI.Sprite(PIXI.Assets.get("btn-play-enabled"));
 
     this.startButton.anchor.set(0.5, 0.5);
 
