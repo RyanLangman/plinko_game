@@ -6,6 +6,7 @@ import { PlinkoBackendService } from './backend/plinko-backend-service';
 import { Splash } from './entities/splash';
 import { SoundPlayer } from './entities/sound-player';
 import { SoundKey } from './enums/sound-keys';
+import { Ball } from './entities/ball';
 
 /**
  * Primary game object that loads assets, instantiates necessary game objects and initializes game loop.
@@ -88,7 +89,7 @@ export class Game {
             
             this.scoreBoard.updateBalance(response.newBalance, response.slotEarnings, 10);
 
-            this.pegBoard.dropBall(response.slot);
+            this.pegBoard.dropBall();
         });
 
         this.soundPlayer.play(SoundKey.BackgroundMusic);
@@ -107,16 +108,7 @@ export class Game {
      */
     logic(): void {
         if (this.gameStarted) {
-            this.pegBoard.moveBall(() => {
-                this.scoreBoard.displayLatestScore();
-                this.playButton.enable();
-                
-                if (this.shouldPlayWinningSlotSound) {
-                    this.soundPlayer.play("winningSlotSound");
-                } else {
-                    this.soundPlayer.play("losingSlotSound");
-                }
-            });
+            this.pegBoard.applyPhysics();
         }
     }
 
@@ -128,7 +120,6 @@ export class Game {
             this.scoreBoard.render(this.app.stage);
             this.pegBoard.render(this.app.stage);
             this.playButton.render(this.app.stage);
-
         } else {
             this.splash.render(this.app.stage);
         }

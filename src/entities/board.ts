@@ -15,6 +15,7 @@ export class Board {
     private ball: Ball;
     private ballTraversalCoordinates: Coordinate[] = [];
     private predeterminedSlot: Slot;
+    private enablePhysics: boolean = false;
 
     /**
      * Creates an instance of Board.
@@ -68,93 +69,33 @@ export class Board {
             xPosition += slotWidth + 2;
         }
 
-        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30, [0, 2]);
+        const randomXPositionModifier = (Math.random() * 100) + (Math.random() * 10);
+        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2) + randomXPositionModifier, 30, [0, 2]);
     }
 
-    /**
-     * Drops the ball into a slot.
-     * @param {number} slotIndex - The index of the slot to drop the ball into.
-     * @returns {number} The value of the slot where the ball lands.
-     */
-    dropBall(slotIndex: number) {
-        let pegPath: Coordinate[] = [];
-        this.ball.setPosition(40 + ((30 + this.pegDiameter) * 2), 30);
-        
-        this.predeterminedSlot = this.slots[slotIndex];
+    // Written with GPT's assistance
+    applyPhysics() {
+        if (this.enablePhysics) {
+            const force = 3;
+            const ball = this.ball;
+            ball.applyGravity();
 
-        const bottomPegRow = this.pegs.length - 1;
-        if (Math.round(Math.random()) == 1) {
-            pegPath.unshift([bottomPegRow, slotIndex]);
-        } else {
-            pegPath.unshift([bottomPegRow, slotIndex + 1]);
+            const [x, y, ballRadius, velocityX, velocityY] = ball.getBallProperties();
+            
+            this.pegs.forEach((row) => {
+                row.forEach((peg) => {
+                    if (peg.collidesWithBall(x, y, ballRadius)) {
+                        console.log("Colliding", peg);
+                        const [newVelocityX, newVeloxityY] = peg.applyCollisionForce(x, y, ballRadius, velocityX, velocityY, force);
+                        ball.updateVelocity(newVelocityX, newVeloxityY);
+                    }
+                });
+            });
         }
-
-        for (let i = this.pegs.length - 1; i > 0; i--) {
-            if (i == 0) {
-                break;
-            }
-
-            const lastCoordinate = pegPath[0];
-            let aboveLeftPegCoord: Coordinate = [0,0];
-            let aboveLeftPeg: Peg | undefined;
-            let aboveRightPegCoord: Coordinate = [0,0];
-            let aboveRightPeg: Peg | undefined;
-
-            if (i % 2 != 0) {
-                aboveLeftPegCoord = [i - 1, lastCoordinate[1]];
-                aboveLeftPeg = this.pegs[aboveLeftPegCoord[0]][aboveLeftPegCoord[1]];
-
-                aboveRightPegCoord = [i - 1, lastCoordinate[1] + 1];
-                aboveRightPeg = this.pegs[aboveRightPegCoord[0]][aboveRightPegCoord[1]];
-            } else {
-                aboveLeftPegCoord = [i - 1, lastCoordinate[1] - 1];
-                aboveLeftPeg = this.pegs[aboveLeftPegCoord[0]][aboveLeftPegCoord[1]];
-
-                aboveRightPegCoord = [i - 1, lastCoordinate[1]];
-                aboveRightPeg = this.pegs[aboveRightPegCoord[0]][aboveRightPegCoord[1]];
-            }
-
-            if (aboveLeftPeg != undefined && aboveRightPeg != undefined) {
-                if (Math.round(Math.random()) == 1) {
-                    pegPath.unshift(aboveLeftPegCoord);
-                } else {
-                    pegPath.unshift(aboveRightPegCoord);
-                }
-            } else if (aboveRightPegCoord == undefined) {
-                pegPath.unshift(aboveLeftPegCoord);
-            } else {
-                pegPath.unshift(aboveRightPegCoord);
-            }
-        }
-
-        pegPath.forEach((pegArrayPosition) => {
-            const peg = this.pegs[pegArrayPosition[0]][pegArrayPosition[1]]
-
-            if (peg == undefined) {
-                console.error('Peg not found, cannot move ball.');
-                return;
-            }
-
-            const nextPosition = peg.getPosition();
-            nextPosition[1] -= this.pegDiameter;
-
-            this.ballTraversalCoordinates.push(nextPosition);
-        })
-
-        this.ballTraversalCoordinates.push(this.predeterminedSlot.centerCoordinate);
-        
-        return this.predeterminedSlot.getSlotValue();
     }
-
-    /**
-     * Moves the ball along its traversal coordinates.
-     * @param {Function} onComplete - The function to call when the ball movement is complete.
-     */
-    moveBall(onComplete: Function) {
-        if (this.ballTraversalCoordinates.length > 0) {
-            this.ball.setAnimationTimeline(this.ballTraversalCoordinates, () => onComplete());
-            this.ballTraversalCoordinates = [];
-        }
+    
+    dropBall() {
+        this.enablePhysics = true;
     }
     
     /**
