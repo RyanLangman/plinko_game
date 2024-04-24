@@ -7,10 +7,9 @@ import { SoundPlayer } from './sound-player';
  * A ball/puck to be dropped on a board.
  */
 export class Ball {
-    private graphic: PIXI.Graphics;
+    private graphic: PIXI.Sprite;
     private ballRadius: number = 10;
     private ballDiameter: number = this.ballRadius * 2;
-    private coordinate: Coordinate;
     private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
 
     /**
@@ -19,12 +18,12 @@ export class Ball {
      * @param {number} y - The y-coordinate of the ball.
      * @param {Coordinate} initialPosition - The initial position of the ball.
      */
-    constructor(x: number, y: number, initialPosition: Coordinate) {
-        this.graphic = new PIXI.Graphics();
-        this.graphic.circle(0, 0, this.ballRadius);
-        this.graphic.fill("purple");
+    constructor(x: number, y: number) {
+        this.graphic = new PIXI.Sprite(PIXI.Assets.get("puck"));
+        this.graphic.width = this.ballDiameter;
+        this.graphic.height = this.ballDiameter;
+        this.graphic.anchor.set(0.5, 0.5);
         this.graphic.position.set(x, y);
-        this.coordinate = initialPosition;
     }
     /**
      * Creates a chained set of tweens to animate the ball smoothly.

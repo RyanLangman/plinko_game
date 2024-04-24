@@ -68,7 +68,7 @@ export class Board {
             xPosition += slotWidth + 2;
         }
 
-        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30, [0, 2]);
+        this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30);
     }
 
     /**
@@ -77,6 +77,10 @@ export class Board {
      * @returns {number} The value of the slot where the ball lands.
      */
     dropBall(slotIndex: number) {
+        if (this.predeterminedSlot != undefined) {
+            this.predeterminedSlot.resetTexture();
+        }
+
         let pegPath: Coordinate[] = [];
         this.ball.setPosition(40 + ((30 + this.pegDiameter) * 2), 30);
         
@@ -152,7 +156,10 @@ export class Board {
      */
     moveBall(onComplete: Function) {
         if (this.ballTraversalCoordinates.length > 0) {
-            this.ball.setAnimationTimeline(this.ballTraversalCoordinates, () => onComplete());
+            this.ball.setAnimationTimeline(this.ballTraversalCoordinates, () => {
+                onComplete();
+                this.predeterminedSlot.setWinLossTexture();
+            });
             this.ballTraversalCoordinates = [];
         }
     }
@@ -168,10 +175,10 @@ export class Board {
             });
         });
 
+        this.ball.render(container);
+
         this.slots.forEach((slot) => {
             slot.render(container);
         });
-
-        this.ball.render(container);
     }
 }

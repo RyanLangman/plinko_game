@@ -5,8 +5,7 @@ import { Coordinate } from '../types/types';
  * A peg to be placed on a board to affect the movement of a ball.
  */
 export class Peg {
-    private graphic: PIXI.Graphics;
-    private colour: string = "red";
+    private graphic: PIXI.Sprite;
 
     /**
      * Creates an instance of Peg.
@@ -15,10 +14,13 @@ export class Peg {
      * @param {number} radius - The radius of the peg.
      */
     constructor(x: number, y: number, radius: number) {
-        this.graphic = new PIXI.Graphics();
-        this.graphic.circle(0, 0, radius);
-        this.graphic.fill(this.colour);
+        const diameter = radius * 2;
+
+        this.graphic = new PIXI.Sprite(PIXI.Assets.get("peg"));
+        this.graphic.anchor.set(0.5, 0.5);
         this.graphic.position.set(x, y);
+        this.graphic.width = diameter;
+        this.graphic.height = diameter;
     }
 
     /**

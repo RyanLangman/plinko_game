@@ -5,8 +5,7 @@ import { Coordinate } from '../types/types';
  * A slot for which a ball can fall into.
  */
 export class Slot {
-    private graphic: PIXI.Graphics;
-    private colour: string = "yellow";
+    private graphic: PIXI.Sprite;
     private text: PIXI.Text;
     private slotValue: number = 0;
     public coordinate: Coordinate = [0, 0];
@@ -21,9 +20,10 @@ export class Slot {
      * @param {number} slotValue - The value associated with the slot.
      */
     constructor(x: number, y: number, width: number, height: number, slotValue: number) {
-        this.graphic = new PIXI.Graphics();
-        this.graphic.rect(x, y, width, height);
-        this.graphic.fill(this.colour);
+        this.graphic = new PIXI.Sprite(PIXI.Assets.get("slot"));
+        this.graphic.width = width;
+        this.graphic.height = height;
+        this.graphic.position.set(x, y);
         this.coordinate = [x, y];
         this.centerCoordinate = [x + width / 2, y + height / 2];
         this.slotValue = slotValue;
@@ -38,8 +38,9 @@ export class Slot {
             }
         });
 
-        this.text.x = x + 5;
-        this.text.y = y + 5;
+        const yAdjustment = -2;
+        this.text.x = this.graphic.x + (this.graphic.width - this.text.width) / 2;
+        this.text.y = this.graphic.y + (this.graphic.height - this.text.height) / 2 + yAdjustment;
     }
 
     /**
@@ -57,5 +58,22 @@ export class Slot {
     render(container: PIXI.Container) {
         container.addChild(this.graphic);
         container.addChild(this.text);
+    }
+    /**
+     * Sets the texture of this slot to the winning/losing slot texture based on its value.
+     */
+    setWinLossTexture() {
+        if (this.slotValue == 10) {
+            this.graphic.texture = PIXI.Assets.get("slot-win");
+        } else {
+            this.graphic.texture = PIXI.Assets.get("slot-loss");
+        }
+    }
+
+    /**
+     * Resets to the default texture for this slot.
+     */
+    resetTexture() {
+        this.graphic.texture = PIXI.Assets.get("slot");
     }
 }

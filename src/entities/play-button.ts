@@ -28,7 +28,6 @@ export class PlayButton {
             this.playButton.on('click', (event) => {
                 if (this.enabled) {
                     clickHandler();
-                    this.enable();
                 }
             });
 

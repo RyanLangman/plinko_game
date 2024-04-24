@@ -46,7 +46,7 @@ export class Game {
     }
 
     /**
-     * Loads assets for the game including sounds and sprite sheets.
+     * Loads assets for the game including sounds, sprite sheet and setting canvas background.
      */
     async loadAssets() {
         this.soundPlayer = SoundPlayer.getInstance();
@@ -60,6 +60,14 @@ export class Game {
         });
 
         await PIXI.Assets.load('plinko-sheet')
+
+        const background = await PIXI.Assets.load('assets/ui/background.jpg');
+        const graphic = new PIXI.Sprite(background);
+        graphic.position.set(0, 0);
+        graphic.width = this.canvasWidth;
+        graphic.height = this.canvasHeight;
+
+        this.app.stage.addChild(graphic);
     }
 
     async setupSplash() {
@@ -128,7 +136,6 @@ export class Game {
             this.scoreBoard.render(this.app.stage);
             this.pegBoard.render(this.app.stage);
             this.playButton.render(this.app.stage);
-
         } else {
             this.splash.render(this.app.stage);
         }
