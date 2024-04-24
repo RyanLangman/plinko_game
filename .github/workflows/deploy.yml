@@ -35,4 +35,5 @@ jobs:
         with:
           app-name: ryan-langman-plinko-game
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C396727AD22D4102B372F5C7FC6CDF7A }}
+          slot-name: Production
           package: dist.zip
