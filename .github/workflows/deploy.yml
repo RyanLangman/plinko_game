@@ -1,39 +1,39 @@
-name: Deploy to Azure App Service
+# name: Deploy to Azure App Service
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '18'
 
-      - name: Install Dependencies
-        run: npm install
+#       - name: Install Dependencies
+#         run: npm install
 
-      - name: Build Project
-        run: npm run build
+#       - name: Build Project
+#         run: npm run build
 
-      - name: Zip Dist Contents
-        run: |
-          cd dist
-          zip -r ../dist.zip .
-          cd ..
+#       - name: Zip Dist Contents
+#         run: |
+#           cd dist
+#           zip -r ../dist.zip .
+#           cd ..
 
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ryan-langman-plinko-game
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C396727AD22D4102B372F5C7FC6CDF7A }}
-          slot-name: Production
-          package: dist.zip
+#       - name: Deploy to Azure App Service
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: ryan-langman-plinko-game
+#           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C396727AD22D4102B372F5C7FC6CDF7A }}
+#           slot-name: Production
+#           package: dist.zip
