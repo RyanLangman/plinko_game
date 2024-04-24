@@ -3,7 +3,7 @@ Hi [Interviewer's Name],
 
 Thank you for taking the time to review my attempt at the Plinko game assessment. Below I've outlined the tech stack, provided a getting started guide, shared notes on my approach and shared thoughts on potential issues and further development.
 
-![Animation](https://github.com/RyanLangman/plinko_game/assets/110283613/ab0371d4-f5c4-42af-a265-3f7db8d6169c)
+![Animation](https://github.com/RyanLangman/plinko_game/assets/110283613/457c5fba-c7fb-475e-b00e-62becf63523a)
 
 ## Getting Started
 To run the application, follow these steps:
@@ -61,7 +61,7 @@ Not being accustomed to using sprite sheets I downloaded a UI asset pack and loa
 
 After some searching I found TexturePacker which made very short work of this, allowing me to load all my images into a single sprite sheet, generate a project file for later changes and outputting the spritesheet & a json data file that references the positioning in the sheet.
 
-This was trivial to load and utilize with PixiJS. That being said, not being experienced in using textures and positioning them correctly, I hit some challenges replacing the circles and slots with the relevant textures without affecting their positioning. These textures also weren't really ideal and didn't add much to the visual appeal of the game, however, I did spruce up the buttons and the scoreboard. 
+This was trivial to load and utilize with PixiJS. That being said, not being experienced in using textures I experienced an issue positioning it correctly. After reading PixiJS's API guide, it was due to the origin point being different for textures vs. graphics, thus I had to change the anchor point of the texture to the center. Having changed this, it was trivial to replace the primitive graphics with textures.
 
 ### Implementing Physics and Considerations
 #### Attempt
