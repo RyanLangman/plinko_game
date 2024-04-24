@@ -34,5 +34,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ryan-langman-plinko-game
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C396727AD22D4102B372F5C7FC6CDF7A }}
           package: dist.zip
