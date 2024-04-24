@@ -4,6 +4,9 @@ import { Ball } from './ball';
 import { Slot } from './slot';
 import { Coordinate } from '../types/types';
 
+/**
+ * A board of pegs and slots which a ball drops through.
+ */
 export class Board {
     private slots: Slot[];
     private pegs: Peg[][];
@@ -13,6 +16,10 @@ export class Board {
     private ballTraversalCoordinates: Coordinate[] = [];
     private predeterminedSlot: Slot;
 
+    /**
+     * Creates an instance of Board.
+     * @param {number} levels - The number of levels in the board.
+     */
     constructor(levels: number = 3) {
         const maxPegsPerRow = 10;
         this.pegs = [];
@@ -64,6 +71,11 @@ export class Board {
         this.ball = new Ball(40 + (horSpaceBetweenPegs * 2), 30, [0, 2]);
     }
 
+    /**
+     * Drops the ball into a slot.
+     * @param {number} slotIndex - The index of the slot to drop the ball into.
+     * @returns {number} The value of the slot where the ball lands.
+     */
     dropBall(slotIndex: number) {
         let pegPath: Coordinate[] = [];
         this.ball.setPosition(40 + ((30 + this.pegDiameter) * 2), 30);
@@ -134,13 +146,21 @@ export class Board {
         return this.predeterminedSlot.getSlotValue();
     }
 
+    /**
+     * Moves the ball along its traversal coordinates.
+     * @param {Function} onComplete - The function to call when the ball movement is complete.
+     */
     moveBall(onComplete: Function) {
         if (this.ballTraversalCoordinates.length > 0) {
             this.ball.setAnimationTimeline(this.ballTraversalCoordinates, () => onComplete());
             this.ballTraversalCoordinates = [];
         }
     }
-
+    
+    /**
+     * Renders the board on the specified container.
+     * @param {PIXI.Container} container - The container to render the board in.
+     */
     render(container: PIXI.Container) {
         this.pegs.forEach((row) => {
             row.forEach((peg) => {

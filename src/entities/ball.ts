@@ -3,6 +3,9 @@ import { Coordinate } from '../types/types';
 import * as TweenJs from '@tweenjs/tween.js'
 import { SoundPlayer } from './sound-player';
 
+/**
+ * A ball/puck to be dropped on a board.
+ */
 export class Ball {
     private graphic: PIXI.Graphics;
     private ballRadius: number = 10;
@@ -10,6 +13,12 @@ export class Ball {
     private coordinate: Coordinate;
     private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
 
+    /**
+     * Creates an instance of Ball.
+     * @param {number} x - The x-coordinate of the ball.
+     * @param {number} y - The y-coordinate of the ball.
+     * @param {Coordinate} initialPosition - The initial position of the ball.
+     */
     constructor(x: number, y: number, initialPosition: Coordinate) {
         this.graphic = new PIXI.Graphics();
         this.graphic.circle(0, 0, this.ballRadius);
@@ -17,7 +26,11 @@ export class Ball {
         this.graphic.position.set(x, y);
         this.coordinate = initialPosition;
     }
-
+    /**
+     * Creates a chained set of tweens to animate the ball smoothly.
+     * @param {Coordinate[]} coordinates - The coordinates to animate the ball to.
+     * @param {Function} onComplete - The function to call when the animation completes.
+     */
     setAnimationTimeline(coordinates: Coordinate[], onComplete: Function) {
         const firstCoordinate = coordinates.shift();
 
@@ -93,10 +106,19 @@ export class Ball {
         firstTween.start();
     }
 
+    /**
+     * Sets the position of the ball.
+     * @param {number} x - The x-coordinate of the ball.
+     * @param {number} y - The y-coordinate of the ball.
+     */
     setPosition(x: number, y: number) {
         this.graphic.position.set(x, y)
     }
-
+    
+    /**
+     * Renders the ball on the specified container.
+     * @param {PIXI.Container} container - The container to render the ball in.
+     */
     render(container: PIXI.Container) {
         container.addChild(this.graphic);
         TweenJs.update();

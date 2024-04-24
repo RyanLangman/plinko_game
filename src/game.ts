@@ -7,6 +7,9 @@ import { Splash } from './entities/splash';
 import { SoundPlayer } from './entities/sound-player';
 import { SoundKey } from './enums/sound-keys';
 
+/**
+ * Primary game object that loads assets, instantiates necessary game objects and initializes game loop.
+ */
 export class Game {
     private app: PIXI.Application;
     private gameStarted: boolean = false;
@@ -20,6 +23,9 @@ export class Game {
     private shouldPlayWinningSlotSound: boolean;
     private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
 
+    /**
+     * Initializes the game, loading assets, creating the initial splash screen and binding gameloop to the PixiJS ticker.
+     */
     async init() {
         this.app = new PIXI.Application();
 
@@ -41,6 +47,9 @@ export class Game {
         this.app.ticker.add(this.gameLoop.bind(this));
     }
 
+    /**
+     * Loads assets for the game.
+     */
     async loadAssets() {
         const sheetTexture = await PIXI.Assets.load('assets/ui/spritesheet.png');
         PIXI.Assets.add({
@@ -52,6 +61,9 @@ export class Game {
         await PIXI.Assets.load('plinko-sheet')
     }
 
+    /**
+     * Starts the game.
+     */
     async startGame() {
         this.gameStarted = true;
 
@@ -73,14 +85,20 @@ export class Game {
             this.pegBoard.dropBall(response.slot);
         });
 
-        // this.soundPlayer.play(SoundKey.BackgroundMusic);
+        this.soundPlayer.play(SoundKey.BackgroundMusic);
     }
 
+    /**
+     * The game loop calls logic and draw for performing game logic and drawing.
+     */
     gameLoop(): void {
         this.logic();
         this.draw();
     }
 
+    /**
+     * Performs game logic.
+     */
     logic(): void {
         if (this.gameStarted) {
             this.pegBoard.moveBall(() => {
@@ -96,6 +114,9 @@ export class Game {
         }
     }
 
+    /**
+     * Draws game elements.
+     */
     draw(): void {
         if (this.gameStarted) {
             this.scoreBoard.render(this.app.stage);

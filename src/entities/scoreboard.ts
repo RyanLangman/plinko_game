@@ -1,15 +1,18 @@
 import * as PIXI from 'pixi.js';
 
+/**
+ * Scoreboard indicates the player's score as they play the game.
+ */
 export class Scoreboard {
     private topLeftBoard: PIXI.Sprite;
     private topRightBoard: PIXI.Sprite;
-    private leftBoards: PIXI.Sprite[] = [] as PIXI.Sprite[];
-    private rightBoards: PIXI.Sprite[] = [] as PIXI.Sprite[];
+    private leftBoards: PIXI.Sprite[] = [];
+    private rightBoards: PIXI.Sprite[] = [];
     private bottomLeftBoard: PIXI.Sprite;
     private bottomRightBoard: PIXI.Sprite;
     private balance: number;
-    private scoreTextsBuffer: Array<PIXI.Text> = [];
-    private scoreTexts: Array<PIXI.Text> = [];
+    private scoreTextsBuffer: PIXI.Text[] = [];
+    private scoreTexts: PIXI.Text[] = [];
     private balanceText: PIXI.Text;
     private readonly textSpacerX: number = 20;
     private readonly textSpacerY: number = 20;
@@ -18,6 +21,10 @@ export class Scoreboard {
     private readonly boardWidth: number = 170;
     private readonly paddingFromEdge: number = 40;
 
+    /**
+     * Creates an instance of Scoreboard.
+     * @param {number} canvasWidth - The width of the canvas.
+     */
     constructor(canvasWidth: number) {
         this.balance = 100;
         this.startX = canvasWidth - (this.boardWidth + this.paddingFromEdge);
@@ -37,12 +44,12 @@ export class Scoreboard {
         for (let i = 0; i < 3; i++) {
             const leftBoard = new PIXI.Sprite(PIXI.Assets.get("mid-left"));
             leftBoard.position.set(this.startX, midBoardStartY + (leftBoard.height * i) - i);
-            this.leftBoards.push(leftBoard);   
+            this.leftBoards.push(leftBoard);
 
             const rightBoard = new PIXI.Sprite(PIXI.Assets.get("mid-right"));
             rightBoard.position.set(this.startX + 50, midBoardStartY + (leftBoard.height * i) - i);
-            this.rightBoards.push(rightBoard); 
-            
+            this.rightBoards.push(rightBoard);
+
             bottomBoardsStartY += leftBoard.height - 1;
         }
 
@@ -64,7 +71,13 @@ export class Scoreboard {
             y: this.startY + this.textSpacerY
         });
     }
-    
+
+    /**
+     * Updates the balance and adds a score text to the buffer.
+     * @param {number} newBalance - The new balance.
+     * @param {number} earnings - The earnings.
+     * @param {number} bet - The bet amount.
+     */
     updateBalance(newBalance: number, earnings: number, bet: number) {
         this.balance = newBalance;
 
@@ -86,6 +99,9 @@ export class Scoreboard {
         this.scoreTextsBuffer.push(scoreText);
     }
 
+    /**
+     * Displays the latest score by updating the balance and moving the score text to the display.
+     */
     displayLatestScore() {
         this.balanceText.text = `Balance: ${this.balance}`;
 
@@ -95,17 +111,21 @@ export class Scoreboard {
         }
     }
 
+    /**
+     * Renders the scoreboard on the specified container.
+     * @param {PIXI.Container} container - The container to render the scoreboard in.
+     */
     render(container: PIXI.Container) {
         container.addChild(this.topLeftBoard);
         container.addChild(this.topRightBoard);
 
         this.leftBoards.forEach((board) => {
             container.addChild(board);
-        })
+        });
 
         this.rightBoards.forEach((board) => {
             container.addChild(board);
-        })
+        });
 
         container.addChild(this.bottomLeftBoard);
         container.addChild(this.bottomRightBoard);

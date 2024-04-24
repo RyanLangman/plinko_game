@@ -1,6 +1,15 @@
 import { APIResponse, PlayResponse, Player } from "../types/types";
 
+/**
+ * Service class for interacting with the Plinko backend.
+ */
 export class PlinkoBackendService {
+    /**
+     * Simulates playing Plinko game.
+     * @param {number} playerId - The ID of the player.
+     * @param {number} creditsToDeduct - The number of credits to deduct for playing.
+     * @returns {Promise<PlayResponse>} A promise resolving to the play response.
+     */
     async play(playerId: number, creditsToDeduct: number): Promise<PlayResponse> {
         // Imagine this being an HTTP request to a backend API.
         const response = await this.mockedPlayEndpoint(playerId, creditsToDeduct);
@@ -20,6 +29,12 @@ export class PlinkoBackendService {
         1: 100
     };
     
+    /**
+     * Simulates a play endpoint on the backend.
+     * @param {number} playerId - The ID of the player.
+     * @param {number} creditsToDeduct - The number of credits to deduct for playing.
+     * @returns {Promise<APIResponse<PlayResponse>>} A promise resolving to the API response.
+     */
     private async mockedPlayEndpoint(playerId: number, creditsToDeduct: number): Promise<APIResponse<PlayResponse>> {
         let response = {} as APIResponse<PlayResponse>;
         response.success = false;
@@ -64,6 +79,10 @@ export class PlinkoBackendService {
         return response;
     }
 
+    /**
+     * Chooses a slot for the ball to land in.
+     * @returns {any[]} An array containing the slot index, earnings, and whether it's a winning slot.
+     */
     private chooseSlotToLandIn(): any[] {
         const slotValues = [10, 5, 2, 1, 0, 1, 2, 5, 10];
         const slotWeighting = [5, 10, 20, 40, 50, 40, 20, 10, 5]
@@ -75,7 +94,12 @@ export class PlinkoBackendService {
         return [chosenSlot, slotValues[chosenSlot], isWinningSlot];
     }
 
-    // Taken from: https://dev.to/jacktt/understanding-the-weighted-random-algorithm-581p
+    /**
+     * Chooses a random value based on weightings.
+     * @param {number[]} values - The array of values to choose from.
+     * @param {number[]} weights - The array of weights for each value.
+     * @returns {number} The chosen value.
+     */
     private randomByWeight(values: number[], weights: number[]): number {
         let total = 0;
       
