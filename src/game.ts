@@ -21,7 +21,7 @@ export class Game {
     private canvasHeight: number = 600;
     private backendService: PlinkoBackendService = new PlinkoBackendService();
     private shouldPlayWinningSlotSound: boolean;
-    private soundPlayer: SoundPlayer = SoundPlayer.getInstance();
+    private soundPlayer: SoundPlayer;
 
     /**
      * Initializes the game, loading assets, creating the initial splash screen and binding gameloop to the PixiJS ticker.
@@ -38,9 +38,7 @@ export class Game {
         document.body.appendChild(this.app.canvas);
         
         await this.loadAssets();
-
-        this.splash = new Splash();
-        await this.splash.init(this.canvasWidth, this.canvasHeight, async () => await this.startGame());
+        await this.setupSplash();
 
         this.app.renderer.render(this.app.stage);
 
@@ -48,10 +46,13 @@ export class Game {
     }
 
     /**
-     * Loads assets for the game.
+     * Loads assets for the game including sounds and sprite sheets.
      */
     async loadAssets() {
+        this.soundPlayer = SoundPlayer.getInstance();
+
         const sheetTexture = await PIXI.Assets.load('assets/ui/spritesheet.png');
+
         PIXI.Assets.add({
             alias: 'plinko-sheet',
             src: 'assets/ui/spritesheet.json',
@@ -59,6 +60,11 @@ export class Game {
         });
 
         await PIXI.Assets.load('plinko-sheet')
+    }
+
+    async setupSplash() {
+        this.splash = new Splash();
+        await this.splash.init(this.canvasWidth, this.canvasHeight, async () => await this.startGame());
     }
 
     /**
