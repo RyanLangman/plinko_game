@@ -69,6 +69,10 @@ Some basic physics is applied to the ball when "DROP" is clicked, this will appl
 and for each frame when the logic method is called on the Game object, it will call the "applyPhysics()" method on the board, which will perform collision detection calculations across all
 the pegs, waiting for the moment the ball collides with a peg. Once this occurs, a force is applied to the ball in the opposite direction bouncing it away.
 
+Demonstration:
+
+![Animation](https://github.com/RyanLangman/plinko_game/assets/110283613/d78a1555-ff3f-4c85-a731-fb2ff2781b19)
+
 Further development on this would include:
 - Walls on the sides of the board to prevent the ball from escaping.
 - Collision detection of the ball into the slot, awarding the points and progressing the game to dropping the ball again (if balance permits).
@@ -83,3 +87,9 @@ Potential solution to this could be to increase the rate of physics calculations
 Another challenge would be accurately guiding the ball towards the slot that was pre-determined. One could apply forces to guide the ball towards the slot but may not be reliable/seem realistic. Alternatively, creating a funnel of invisible walls to guide the ball towards a slot could introduce unrealistic movements if not done carefully.
 
 Below are diagrams of what these approaches could look like:
+#### Applying forces dynamically to guide towards slot
+![Untitled Diagram-Page-2 drawio](https://github.com/RyanLangman/plinko_game/assets/110283613/7fb23783-aabe-4ee5-aab8-5fc5cd105111)
+
+#### Invisible walls to funnel towards slot
+![Untitled Diagram drawio](https://github.com/RyanLangman/plinko_game/assets/110283613/b781acb2-f2c7-40d4-a9e5-189c0ec25049)
+
